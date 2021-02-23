@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Art Museum</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    
+</head>
+<body>
+
+   <a-scene>
+       <a-assets>
+        <img  width="10" id="floor" src="images/floor.jpg">
+        <img  width="10" id="roof" src="images/roof.jpg">
+        <img  width="10" id="wall" src="images/wall.jpg">
+        <a-image visible=false id="test"></a-image>
+       </a-assets>
+
+       <a-entity id=entity0 position="0 0 -5"></a-entity>
+       <a-entity id=entity1 position="7 0 -2" rotation="0 -45 0"></a-entity>
+       <a-entity id=entity2 position="-7 0 -2" rotation="0 45 0"></a-entity>
+       <a-entity id=entity3 position="9.8 0 5" rotation="0 90 0"></a-entity>  
+       <a-entity id=entity4 position="-9.8 0 5" rotation="0 90 0"></a-entity>
+       <a-entity id=entity5 position="-9.8 0 13.5" rotation="0 90 0"></a-entity>
+       <a-entity id=entity6 position="9.8 0 13.5" rotation="0 90 0"></a-entity>
+       <a-entity id=entity7 position="-9.8 0 22" rotation="0 90 0"></a-entity>s
+       <a-entity id=entity8 position="9.8 0 22" rotation="0 90 0"></a-entity>
+       <a-entity id=entity9 position="-9.8 0 30.5" rotation="0 90 0"></a-entity>
+       <a-entity id=entity10 position="9.8 0 30.5" rotation="0 90 0"></a-entity>
+       <a-entity text="color: red" id=artistName scale="20 20 20" position="5.8 6 -4.5" rotation="45 0 0"></a-entity>
+       <a-sky color="grey"></a-sky>
+       <a-box src="#floor" sound="src: url(/sounds/talking.wav); autoplay: true, loop: true, volume: 1" repeat="7 8" width="10" height="10" rotation="90 0 0" position="0 -5 15" scale="3 4.2 0.5"></a-box>
+       <a-box src="#roof" repeat="8 12" width="10" height="10" rotation="90 0 0" position="0 10 15" scale="2 4.2 0.5"></a-box>
+       <a-box src="#wall" repeat="2 6" width="10" height="10" rotation="90 0 0" position="10.6 2.3 15" scale="0.1 4.2 15"></a-box>
+       <a-box src="#wall" repeat="2 6" width="10" height="10" rotation="90 0 0" position="-10.6 2.3 15" scale="0.1 4.2 15"></a-box>
+       <a-box src="#wall" repeat="2 2" width="10" height="10" rotation="0 0 0" position="0 2.3 -6" scale="2.5s 1.5 0.1"></a-box>
+       <a-box src="#wall" repeat="2 2" width="10" height="10" rotation="0 0 0" position="0 2.3 36" scale="2.5s 1.5 0.1"></a-box>
+    
+   </a-scene>
+
+   <script type="module">
+        let offsetRight = 0;
+        let imageId = 0;
+        let loadedImages = [];
+        let artistArray = ["Rembrandt van Rijn","Johannes Vermeer","Johannes Cornelisz. Verspronck","Hendrik Voogd","Gerrit Schouten","Salomon van Ruysdael","Frans Jansz. Post","Gerard de Lairesse","Albrecht Dürer"]
+        
+        $(document).ready(function(){
+            
+            function random(num){
+                return Math.floor(Math.random()*num)
+            }
+
+            let randomNumber = random(9);
+            let randomArtist = artistArray[randomNumber];
+            let target = document.querySelector(`#artistName`)
+            target.setAttribute("text", `value: ${randomArtist}`);
+            console.log(randomArtist);
+
+            $.get(`https://kolbycorsanywhere.herokuapp.com/https://www.rijksmuseum.nl/api/nl/collection?key=SB1NYlck&involvedMaker=${artistArray[randomNumber]}`, function(data){
+                let loadedImage = data.artObjects; 
+                $.each(loadedImage, function(index, value){
+                    loadedImage = value.webImage.url;
+                    if(!loadedImages.includes(loadedImage)){
+                        $("#test").clone().attr({"src": `${loadedImage}`,"id": `img${imageId}`}).appendTo(`#entity${imageId}`);
+                        let target = document.querySelector(`#img${imageId}`)
+                        target.setAttribute('visible', true);
+                        target.setAttribute('scale', "8 8 8");
+                        //offsetRight += 9;
+                        imageId ++;
+                        loadedImages.push(loadedImage);
+                    }
+                })
+                
+            })
+        })
+    </script>
+</body>
+</html>
